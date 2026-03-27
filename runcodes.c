@@ -1,6 +1,6 @@
 //16863736 - Enzo Ferreira de Castro Lima
 //17070779 - Eric Costa Lopes
-//16990096 - Nicolas Jose Mota
+//16990096 - Nicolas José Mota
 //16898096 - Rafael Pavon Diesner
 
 #include <stdio.h>
