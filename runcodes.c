@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 typedef struct grafo_
 {
@@ -106,7 +107,8 @@ void printinfo (GRAFO *grafo, int *vetor)
 {
     if (grafo != NULL && vetor == NULL)
     {
-        int temaresta = 0; //marcador que vale 0 se o grafo não tiver arestas e vale 1 se o grafo tiver pelo menos 1 aresta
+        
+        int primeiro = 1; //marcador serve para identificar a primeira aresta (apenas para fazer a formatação correta), ele será mudado para 0 depois que a primeira aresta tiver sido imprimida
         printf("V = [");
         for(int i = 1; i <= grafo->nVertices; i++) //imprimo todos os vértices (vão de 1 a nVertices)
         {   
@@ -118,7 +120,7 @@ void printinfo (GRAFO *grafo, int *vetor)
                 printf("%d]\n", i);
             }
         }
-        printf ("E = [");
+        printf("E = [");
         //para imprimir as arestas, percorremos primeiro as colunas e depois as linhas
         for (int j = 1; j < grafo->nVertices; j++) //percorremos a matriz pra ver quais arestas existem e printamos elas
         {
@@ -126,18 +128,18 @@ void printinfo (GRAFO *grafo, int *vetor)
             {
                 if (grafo->matrizAdjacencia[i][j] != -1) //se a aresta existe, imprimimos
                 {
-                    printf("(%d, %d), ", (i+1), (j+1));
-                    temaresta = 1; //o grafo tem pelo menos uma aresta
+                    if (primeiro == 0)
+                    {
+                        printf(", (%d, %d)", (i+1), (j+1));
+                    }
+                    else{ //se for a primeira aresta a ser imprimida, imprimo sem virgula
+                        printf("(%d, %d)", (i+1), (j+1));
+                        primeiro = 0; //atualizamos o valor de primeiro
+                    }
                 }
             }
         }
-        if (temaresta == 1) //essa verificação serve para corrigir a formatação da saída
-        {
-            printf("\b\b]\n");
-        }
-        else{
-            printf("]\n");
-        }
+        printf("]\n");
     }
     if (grafo != NULL && vetor != NULL) //caso o vetor de vizinhos não seja nulo, significa que eu quero printar apenas esse vetor e não o grafo inteiro
     {
