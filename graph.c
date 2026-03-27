@@ -30,13 +30,14 @@ GRAFO* criargrafo(int n)
 
 void addaresta(GRAFO *grafo, int v1, int v2, int peso)
 {
-    if (grafo != NULL || v1 > grafo->nVertices || v2 > grafo->nVertices)
+    if (grafo != NULL && v1 <= grafo->nVertices && v2 <= grafo->nVertices) //os vértices devem ser válidos para ser possível adicionar uma aresta
     {
         grafo->matrizAdjacencia[v1-1][v2-1] = peso; //escrevo o peso na posição correta da matriz de adjacência;
         grafo->matrizAdjacencia[v2-1][v1-1] = peso; //adiciono no simétrico também, considerando arestas bidirecionais
     }
-    else{
-        printf("-1");
+    else
+    {
+        printf("-1"); //não foi possível criar a aresta
     }
 }
 
@@ -46,37 +47,47 @@ int existearesta(GRAFO *grafo, int v1, int v2)
     {
         if (grafo->matrizAdjacencia[v1-1][v2-1] != -1) //-1 na matriz indica que a aresta não existe
         {
-            return 0; //a aresta entre v1 e v2 não existe
+            return 1; //a aresta entre v1 e v2 existe
         }
         else
         {
-            return 1;//a aresta entre v1 e v2 existe
+            return 0;//a aresta entre v1 e v2 não existe
         }
     }
 }
-void vizinhos (GRAFO *grafo, int v)
+
+int *vizinhos (GRAFO *grafo, int v)
 {
     if (grafo != NULL)
     {
-        printf("V = [");
+        int p = 0; //marca a posição do vetor que os vizinhos serão adicionados
+        int *vizinhos = (int *)malloc(grafo->nVertices * sizeof(int)); //array de vizinhos, seu tamanho é a quantidade de vértices do grafo. Ele é alocado dinâmicamente para que eu possa utilizá-lo fora do escopo da função
         for (int i = 0; i < grafo->nVertices; i++) //percorro a linha da matriz correspondente ao vertice v
         {
             if (grafo->matrizAdjacencia[v-1][i] != -1) //caso o valor da matriz seja diferente de -1, existirá uma aresta entre o vértice v e o vértice correspondente a coluna
             {
-                printf("%d, ", i); //imprimo o número do vértice (também é o número da coluna) que divide aresta com v
+                vizinhos[p] = i+1; //coloco o valor do vértice correspondente a coluna no array de vizinho, pois ele é vizinho de v
+                p++;
             }
         }
-        printf("\b\b]");
+        if(p == 0)
+        {
+            return NULL;
+        }
+        for (p; p < grafo->nVertices; p++)
+        {
+            vizinhos[p] = 0;
+        }
+        return vizinhos;
     }
 }
 
 int apagaaresta (GRAFO *grafo, int v1, int v2)
 {
-    if (grafo != NULL)
+    if (grafo != NULL && v1 <= grafo->nVertices && v2 <= grafo->nVertices)
     {
-        if (grafo->matrizAdjacencia[v1-1][v2-1] == -1) //caso a aresta não exista, printa e retorna -1
+        if (grafo->matrizAdjacencia[v1-1][v2-1] == -1) //caso a aresta não exista retorna -1
         {
-            printf("-1");
             return -1;
         }
         else //caso a aresta existe (seja diferente de -1), colocamos -1 nos espaços equivalentes a aresta a ser apagada
@@ -86,15 +97,17 @@ int apagaaresta (GRAFO *grafo, int v1, int v2)
             return 1;
         }
     }
+    return -1; //se o usuário forneceu vértices inválidos também retornamos erro
 }   
-void printinfo (GRAFO *grafo)
+void printinfo (GRAFO *grafo, int *vetor)
 {
-    if (grafo != NULL)
+    if (grafo != NULL && vetor == NULL)
     {
+        int temaresta = 0; //marcador que vale 0 se o grafo não tiver arestas e vale 1 se o grafo tiver pelo menos 1 aresta
         printf("V = [");
-        for(int i = 1; i <= grafo->nVertices; i++)
+        for(int i = 1; i <= grafo->nVertices; i++) //imprimo todos os vértices (vão de 1 a nVertices)
         {   
-            if (i != grafo->nVertices)
+            if (i != grafo->nVertices) //verifica se é o último vértice pra corrigir a formatação da saída
             {
                 printf("%d, ", i);
             }
@@ -103,17 +116,34 @@ void printinfo (GRAFO *grafo)
             }
         }
         printf ("E = [");
-        for (int i = 0; i < grafo->nVertices; i++)
+        //para imprimir as arestas, percorremos primeiro as colunas e depois as linhas
+        for (int j = 1; j < grafo->nVertices; j++) //percorremos a matriz pra ver quais arestas existem e printamos elas
         {
-            for (int j = i; j < grafo->nVertices; j++)
+            for (int i = 0; i < j; i++) //a restrição de i < j serve para percorrer na ordem correta de acordo com a formatação pedida
             {
-                if (grafo->matrizAdjacencia[i][j] != -1)
+                if (grafo->matrizAdjacencia[i][j] != -1) //se a aresta existe, imprimimos
                 {
-                    printf("(%d, %d),  ", (i+1), (j+1));
+                    printf("(%d, %d), ", (i+1), (j+1));
+                    temaresta = 1; //o grafo tem pelo menos uma aresta
                 }
             }
         }
-        printf("\b\b]");
+        if (temaresta == 1) //essa verificação serve para corrigir a formatação da saída
+        {
+            printf("\b\b]\n");
+        }
+        else{
+            printf("]\n");
+        }
+    }
+    if (grafo != NULL && vetor != NULL) //caso o vetor de vizinhos não seja nulo, significa que eu quero printar apenas esse vetor e não o grafo inteiro
+    {
+        int i = 0;
+        while (vetor[i] != 0)
+        {
+            printf("%d ", vetor[i]);
+            i++;
+        }
     }
 }
 

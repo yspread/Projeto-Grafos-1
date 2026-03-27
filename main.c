@@ -4,41 +4,60 @@
 
 int main()
 {
-    int option;
-    int N, x, y, w;
+    int option; //identifica qual caso teste será aplicado
+    int N, x, y, w;//N é o número de vértices do grafo e x, y e w são os inputs que serão dados pelos usuários a depender da operação
     int res;
-    bool printstatus = 1;
+    int *osvizinhos = NULL; //vetor de vizinhos, será usado apenas no caso 3
+    bool printstatus = 1; //indica se chamaremos a função print info e printaremos o grafo ou se apenas printaremos o status da operação feita
     GRAFO *G;
     scanf("%d", &option);
     while(option != -1)
     {
         switch(option)
         {
-        case 0:
+        case 0: //aqui criamos o grafo com n vértices
             scanf("%d", &N);
             G = criargrafo(N);
             break;
-        case 1:
+        case 1: //nesse caso criamos no grafo uma aresta entre x e y, de peso w
             scanf("%d %d %d", &x, &y, &w);
             addaresta(G, x, y, w);                
             break;
-        case 2:
+        case 2: //nesse caso verificamos se existe aresta entre x e y
             scanf("%d %d", &x, &y);
             res = existearesta(G, x, y);
-            printstatus = 0;
+            printstatus = 0; //iremos printar o status da operação (1 se existe e -1 se não)
+            break;
+        case 3: //nesse caso printamos o array de vizinhos do vértice x
+            scanf("%d", &x);
+            osvizinhos = vizinhos(G, x);
+            break;
+        case 4: //nesse caso apagamos a aresta entre x e y, se esta existir
+            scanf("%d %d", &x, &y);
+            res = apagaaresta(G, x, y);
+            if (res == -1) //caso de erro na função apagaaresta, iremos printar o valor de res (-1), mas caso seja bem sucedido, printaremos o grafo completo, sem a aresta removida
+            {
+                printstatus = 0;
+            }
             break;
         default:
             printf("unrecognized option %d!\n", option);
         }
-        scanf("%d\n", &option);
+        scanf("%d", &option);
     }
     if (option == -1)
     {
         if(printstatus)
         {
-            printinfo(G);
+            printinfo(G, osvizinhos); //printamos o estado do grafo, printamos os vizinhos de um vértice caso option = 3 tenha sido acionado
+            if (osvizinhos != NULL)
+            {
+                free(osvizinhos); //liberamos a memória se necessário
+                osvizinhos = NULL;
+            }
         }
-        else{
+        else //printamos o status da operação
+        {
             printf("%d\n", res);
         }
     }
