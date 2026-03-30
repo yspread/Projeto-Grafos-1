@@ -130,7 +130,7 @@ void printinfo (GRAFO *grafo, int *vetor)
                     }
                     else{ //se for a primeira aresta a ser imprimida, imprimo sem virgula
                         printf("(%d, %d)", (i+1), (j+1));
-                        primeiro = 1; //atualizamos o valor de primeiro
+                        primeiro = 0; //atualizamos o valor de primeiro
                     }
                 }
             }

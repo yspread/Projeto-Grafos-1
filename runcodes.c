@@ -208,6 +208,7 @@ int main()
     int option; //identifica qual caso teste será aplicado
     int N, x, y, w;//N é o número de vértices do grafo e x, y e w são os inputs que serão dados pelos usuários a depender da operação
     int res;
+    int printmatriz = 0; //indica se a matriz de adjacencia será printada ou não
     int *osvizinhos = NULL; //vetor de vizinhos, será usado apenas no caso 3
     bool printstatus = 1; //indica se chamaremos a função print info e printaremos o grafo ou se apenas printaremos o status da operação feita
     GRAFO *G;
@@ -241,6 +242,9 @@ int main()
                 printstatus = 0;
             }
             break;
+        case 5: //caso para imprimir a matriz de adjacência
+            printmatriz = 1;
+            break;
         default:
             printf("unrecognized option %d!\n", option);
         }
@@ -250,11 +254,32 @@ int main()
     {
         if(printstatus)
         {
-            printinfo(G, osvizinhos); //printamos o estado do grafo, printamos os vizinhos de um vértice caso option = 3 tenha sido acionado
-            if (osvizinhos != NULL)
+            if (printmatriz)
             {
-                free(osvizinhos); //liberamos a memória se necessário
-                osvizinhos = NULL;
+                printf("Adjacency Matrix:\n"); //impressao da matriz de adjacência
+                for (int i = 0; i < N; i++)
+                {
+                    for (int j = 0; j < N; j++)
+                    {
+                        if ((getmatrizadj(G)[i][j]) != -1)
+                        {
+                            printf("%4d", ((getmatrizadj(G))[i][j]));
+                        }
+                        else{
+                            printf("   0");
+                        }
+                    }
+                    printf("\n");
+                }
+            }
+            else
+            {
+                printinfo(G, osvizinhos); //printamos o estado do grafo, printamos os vizinhos de um vértice caso option = 3 tenha sido acionado
+                if (osvizinhos != NULL)
+                {
+                    free(osvizinhos); //liberamos a memória se necessário
+                    osvizinhos = NULL;
+                }
             }
         }
         else //printamos o status da operação
