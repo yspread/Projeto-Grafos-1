@@ -245,6 +245,11 @@ int main()
         case 5: //caso para imprimir a matriz de adjacência
             printmatriz = 1;
             break;
+        case 6: //caso para retornar o vértice com mais vizinhos
+            res = maisvizinhos(G); //res vai armazenar o vértice com mais vizinhos
+            printf("max vertex: ");
+            printstatus = 0; //para printar o valor de res
+            break;
         default:
             printf("unrecognized option %d!\n", option);
         }
@@ -257,16 +262,22 @@ int main()
             if (printmatriz)
             {
                 printf("Adjacency Matrix:\n"); //impressao da matriz de adjacência
+                int valorprint; //valor que será printado por posição da matriz
                 for (int i = 0; i < N; i++)
                 {
                     for (int j = 0; j < N; j++)
                     {
-                        if ((getmatrizadj(G)[i][j]) != -1)
+                        valorprint = getmatrizadj(G)[i][j];
+                        if ((valorprint) == -1)
                         {
-                            printf("%4d", ((getmatrizadj(G))[i][j]));
+                            valorprint = 0; //se a posição da matriz valer -1, eu devo printar 0 no lugar
+                        }
+                        if (j == 0) //para consertar a formação e fazer de acordo com a saída esperada
+                        {
+                            printf("%3d", valorprint);
                         }
                         else{
-                            printf("   0");
+                            printf("%4d", valorprint);
                         }
                     }
                     printf("\n");
