@@ -69,6 +69,7 @@ int main()
                     {
                         valorprint = getmatrizadj(G)[i][j];
                         if ((valorprint) == -1)
+                        {
                             valorprint = 0; //se a posição da matriz valer -1, eu devo printar 0 no lugar
                         }
                         if (j == 0) //para consertar a formação e fazer de acordo com a saída esperada
