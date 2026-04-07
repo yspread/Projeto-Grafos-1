@@ -9,13 +9,14 @@ typedef struct grafo_
     int **matrizAdjacencia;
 }GRAFO;
 
+//função para alocar memmória para a matriz de adjacência
 GRAFO* criargrafo(int n)
 {
     GRAFO *grafo = (GRAFO *)malloc(sizeof(GRAFO));
     if (grafo != NULL)
     {
         grafo->nVertices = n;
-        grafo->matrizAdjacencia = (int **)malloc(n * sizeof(int *)); //alocando a matriz de adjacencia dinamicamente
+        grafo->matrizAdjacencia = (int **)malloc(n * sizeof(int *)); //matriz de adjacência alocada dinamicamente
         for (int i = 0; i < n; i++)
         {
             grafo->matrizAdjacencia[i] = (int*)malloc(n * sizeof(int));
@@ -28,6 +29,9 @@ GRAFO* criargrafo(int n)
     return grafo;
 }
 
+//função para se adicionar uma aresta no grafo, marcando na matriz de adjacência
+//como os vértices são indexados de 1 a N, mas as linhas e colunas vão do indice 0 ao indice N-1
+//sempre marcaremos que uma aresta entre v1 e v2 estará no espaço [v1-1][v2-2] da matriz
 void addaresta(GRAFO *grafo, int v1, int v2, int peso)
 {
     if (grafo != NULL && v1 <= grafo->nVertices && v2 <= grafo->nVertices) //os vértices devem ser válidos para ser possível adicionar uma aresta
@@ -41,6 +45,7 @@ void addaresta(GRAFO *grafo, int v1, int v2, int peso)
     }
 }
 
+//função para verificar se uma aresta entre 2 vértices existe
 int existearesta(GRAFO *grafo, int v1, int v2)
 {
     if (grafo != NULL)
@@ -56,35 +61,37 @@ int existearesta(GRAFO *grafo, int v1, int v2)
     }
 }
 
+//retorna um vetor contendo os vértices adjacentes a v
 int *vizinhos (GRAFO *grafo, int v)
 {
     if (grafo != NULL)
     {
+        int *vizinhos = (int *)malloc((grafo->nVertices + 1)* sizeof(int)); //array de vizinhos, seu tamanho é a quantidade de vértices do grafo. Ele é alocado dinâmicamente para que eu possa utilizá-lo fora do escopo da função
         int p = 0; //marca a posição do vetor que os vizinhos serão adicionados
-        int *vizinhos = (int *)malloc(grafo->nVertices * sizeof(int)); //array de vizinhos, seu tamanho é a quantidade de vértices do grafo. Ele é alocado dinâmicamente para que eu possa utilizá-lo fora do escopo da função
         for (int i = 0; i < grafo->nVertices; i++) //percorro a linha da matriz correspondente ao vertice v
         {
             if (grafo->matrizAdjacencia[v-1][i] != -1) //caso o valor da matriz seja diferente de -1, existirá uma aresta entre o vértice v e o vértice correspondente a coluna
             {
-                vizinhos[p] = i+1; //coloco o valor do vértice correspondente a coluna no array de vizinho, pois ele é vizinho de v
-                p++;
+                vizinhos[p] = i+1; //coloco o valor do vértice correspondente a coluna no array de vizinhos, pois ele é adjacente a v
+                p++;//passo pra próxima posição do vetor
             }
         }
         if(p == 0)
         {
             return NULL;
         }
-        for (p; p < grafo->nVertices; p++)
+        for (p; p <= grafo->nVertices; p++) //foi alocado anteriormente nVertices + 1 espaços de memória para se ter certeza de que terá pelo menos 1 '0' no vetor
         {
-            vizinhos[p] = 0;
+            vizinhos[p] = 0; //prenche o resto do vetor com zeros 
         }
         return vizinhos;
     }
 }
 
+//deleta uma aresta entre v1 e v2, se essa existir
 int apagaaresta (GRAFO *grafo, int v1, int v2)
 {
-    if (grafo != NULL && v1 <= grafo->nVertices && v2 <= grafo->nVertices)
+    if (grafo != NULL && v1 <= grafo->nVertices && v2 <= grafo->nVertices) //verifica se os vértices são validos
     {
         if (grafo->matrizAdjacencia[v1-1][v2-1] == -1) //caso a aresta não exista retorna -1
         {
@@ -98,12 +105,15 @@ int apagaaresta (GRAFO *grafo, int v1, int v2)
         }
     }
     return -1; //se o usuário forneceu vértices inválidos também retornamos erro
-}   
+}  
+
+//essa função pode imprimir 2 coisas
+//caso int *vetor seja NULL, imprimimos o conjunto de vértices e arestas do grafo
+//caso vetor seja != de NULL, imprimimos o vetor, esse vetor corresponde ao vetor de vertices adjacentes a um vertice informado na main
 void printinfo (GRAFO *grafo, int *vetor)
 {
-    if (grafo != NULL && vetor == NULL)
+    if (grafo != NULL && vetor == NULL) //nesse caso, imprimimo vertices e arestas do grafo
     {
-        
         int primeiro = 1; //marcador serve para identificar a primeira aresta (apenas para fazer a formatação correta), ele será mudado para 0 depois que a primeira aresta tiver sido imprimida
         printf("V = [");
         for(int i = 1; i <= grafo->nVertices; i++) //imprimo todos os vértices (vão de 1 a nVertices)
@@ -148,6 +158,7 @@ void printinfo (GRAFO *grafo, int *vetor)
     }
 }
 
+//função para se liberar a memória alocada para o grafo
 void apagargrafo(GRAFO **grafo)
 {
     if (*grafo != NULL)
@@ -165,6 +176,7 @@ void apagargrafo(GRAFO **grafo)
     *grafo = NULL;
 }
 
+//função que retorna o vértice com mais vértices adjacentes do grafo
 int maisvizinhos(GRAFO *grafo)
 {
     if (grafo != NULL)
@@ -191,6 +203,7 @@ int maisvizinhos(GRAFO *grafo)
     return 0;
 }
 
+//função para se acessar a matriz de adjacência de um grafo
 int **getmatrizadj(GRAFO *grafo)
 {
     if (grafo != NULL)
